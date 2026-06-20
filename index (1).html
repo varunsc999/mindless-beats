@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mindless_beats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --card: #141414;
+      --card-border: #242424;
+      --purple: #c084fc;
+      --purple-hover: #d8a5ff;
+      --cyan: #38bdf8;
+      --text-primary: #f0f0f0;
+      --text-muted: #555;
+      --text-dim: #2e2e2e;
+      --progress-track: #2a2a2a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Floating ambient notes in background ── */
+    .bg-deco {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bg-note {
+      position: absolute;
+      font-size: 18px;
+      color: var(--purple);
+      opacity: 0;
+      animation: floatUp var(--dur, 14s) ease-in infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.07; }
+      90%  { opacity: 0.05; }
+      100% { transform: translateY(-10vh) rotate(20deg); opacity: 0; }
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 4rem 2rem 0;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #1e1e1e;
+    }
+
+    .site-title {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+    .site-title .beats { color: var(--purple); }
+
+    .header-meta {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .track-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── Seamless scrolling note ticker ── */
+    .ticker-wrap {
+      overflow: hidden;
+      width: 100%;
+      padding: 1.2rem 0;
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid #181818;
+    }
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: ticker 28s linear infinite;
+    }
+    /* Duplicate content for seamless loop */
+    .ticker-content {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      white-space: nowrap;
+      padding-right: 0;
+    }
+    .ticker-notes {
+      font-size: 13px;
+      color: var(--text-dim);
+      letter-spacing: 0.55em;
+      padding: 0 0.3em;
+    }
+    .ticker-wave {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin: 0 0.6em;
+      vertical-align: middle;
+    }
+    .ticker-wave span {
+      display: inline-block;
+      width: 2px;
+      border-radius: 99px;
+      background: var(--text-dim);
+      animation: wavepulse 1.5s ease-in-out infinite;
+    }
+    .ticker-wave span:nth-child(1) { height: 5px;  animation-delay: 0s; }
+    .ticker-wave span:nth-child(2) { height: 11px; animation-delay: 0.2s; }
+    .ticker-wave span:nth-child(3) { height: 7px;  animation-delay: 0.4s; }
+    .ticker-wave span:nth-child(4) { height: 14px; animation-delay: 0.6s; }
+    .ticker-wave span:nth-child(5) { height: 9px;  animation-delay: 0.8s; }
+    .ticker-wave span:nth-child(6) { height: 12px; animation-delay: 1.0s; }
+    .ticker-wave span:nth-child(7) { height: 5px;  animation-delay: 1.2s; }
+
+    @keyframes wavepulse {
+      0%, 100% { transform: scaleY(1); opacity: 0.3; }
+      50%       { transform: scaleY(1.7); opacity: 0.65; }
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      max-width: 1400px;
+      margin: 2.5rem auto 1rem;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .section-label span {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #1e1e1e;
+    }
+
+    /* ── Grid ── */
+    .grid-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+      position: relative;
+      z-index: 1;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Card ── */
+    .song-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.4rem 1.4rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .song-card:hover {
+      border-color: #333;
+      transform: translateY(-2px);
+    }
+    .song-card.playing {
+      border-color: #c084fc55;
+    }
+    .song-card.playing::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: radial-gradient(ellipse at 50% 110%, #c084fc0d 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* faint card note deco */
+    .card-deco-note {
+      position: absolute;
+      top: 8px; right: 12px;
+      font-size: 42px;
+      color: var(--purple);
+      opacity: 0.04;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .track-num {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .track-dur {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .song-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .song-sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 2px;
+    }
+    .play-btn {
+      width: 40px; height: 40px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: none;
+      background: var(--purple);
+      color: #0a0a0a;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .play-btn:hover { background: var(--purple-hover); }
+    .play-btn:active { transform: scale(0.94); }
+    .song-card.playing .play-btn { background: var(--cyan); }
+
+    .progress-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .progress-wrap {
+      position: relative;
+      height: 3px;
+      background: var(--progress-track);
+      border-radius: 99px;
+      cursor: pointer;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      width: 0%;
+      pointer-events: none;
+    }
+    .progress-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: #fff;
+      left: 0%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .progress-wrap:hover .progress-thumb { opacity: 1; }
+    .time-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .time-display {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.03em;
+    }
+    .time-sep { font-size: 11px; color: var(--text-dim); }
+
+    audio { display: none; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 12px;
+      color: var(--text-dim);
+      border-top: 1px solid #181818;
+      letter-spacing: 0.08em;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 540px) {
+      header { padding: 2.5rem 1.25rem 0; }
+      .grid-wrap { padding: 0 1.25rem 4rem; }
+      .header-inner { flex-direction: column; align-items: flex-start; }
+      .header-meta { text-align: left; }
+      .section-label { margin-top: 1.5rem; padding: 0 1.25rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ticker-track { animation: none; }
+      .ticker-wave span { animation: none; }
+      .bg-note { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating background note decorations -->
+  <div class="bg-deco" aria-hidden="true">
+    <span class="bg-note" style="left:8%;  --dur:16s; --delay:0s">♩</span>
+    <span class="bg-note" style="left:20%; --dur:22s; --delay:3s">♪</span>
+    <span class="bg-note" style="left:35%; --dur:18s; --delay:7s">♫</span>
+    <span class="bg-note" style="left:50%; --dur:25s; --delay:1s">♬</span>
+    <span class="bg-note" style="left:63%; --dur:19s; --delay:9s">♩</span>
+    <span class="bg-note" style="left:77%; --dur:21s; --delay:4s">♪</span>
+    <span class="bg-note" style="left:90%; --dur:17s; --delay:12s">♫</span>
+    <span class="bg-note" style="left:42%; --dur:24s; --delay:6s">♬</span>
+    <span class="bg-note" style="left:72%; --dur:20s; --delay:15s">♩</span>
+    <span class="bg-note" style="left:15%; --dur:23s; --delay:11s">♫</span>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <h1 class="site-title">mindless_<span class="beats">beats</span></h1>
+      <div class="header-meta">
+        <p class="track-count">10 tracks</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Seamless scrolling ticker -->
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker-track">
+      <!-- First copy -->
+      <div class="ticker-content">
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+      </div>
+      <!-- Exact duplicate for seamless loop -->
+      <div class="ticker-content">
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+        <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
+        <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">
+    <span>tracks</span>
+  </div>
+
+  <main class="grid-wrap">
+    <div class="grid" id="grid">
+
+      <!-- ─ CARD 1 ─ Change title, genre, and audio src ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♪</span>
+        <audio src="audio/song1.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 01</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 01">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 2 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♫</span>
+        <audio src="audio/song2.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 02</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 02">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 3 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♬</span>
+        <audio src="audio/song3.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 03</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 03">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 4 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♩</span>
+        <audio src="audio/song4.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 04</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 04">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 5 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♪</span>
+        <audio src="audio/song5.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 05</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 05">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 6 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♫</span>
+        <audio src="audio/song6.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 06</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 06">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 7 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♬</span>
+        <audio src="audio/song7.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 07</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 07">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 8 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♩</span>
+        <audio src="audio/song8.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 08</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 08">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 9 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♪</span>
+        <audio src="audio/song9.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 09</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 09">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CARD 10 ─ -->
+      <div class="song-card">
+        <span class="card-deco-note" aria-hidden="true">♫</span>
+        <audio src="audio/song10.mp3"></audio>
+        <div class="top-row">
+          <span class="track-num">Track 10</span>
+          <span class="track-dur">0:00</span>
+        </div>
+        <div>
+          <p class="song-title">Song Title Here</p>
+          <p class="song-sub">Genre / Mood</p>
+        </div>
+        <div class="controls-row">
+          <button class="play-btn" aria-label="Play Track 10">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>
+          </button>
+          <div class="progress-col">
+            <div class="progress-wrap">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-display cur">0:00</span>
+              <span class="time-sep">/</span>
+              <span class="time-display tot">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>♩ &nbsp; mindless_beats &nbsp; ♩</footer>
+
+  <script>
+    const PLAY_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>`;
+    const PAUSE_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2h3v10H3V2zm5 0h3v10H8V2z"/></svg>`;
+
+    let currentAudio = null;
+    let currentCard  = null;
+
+    function fmt(s) {
+      if (!s || isNaN(s)) return '0:00';
+      const m   = Math.floor(s / 60);
+      const sec = Math.floor(s % 60).toString().padStart(2, '0');
+      return m + ':' + sec;
+    }
+
+    function resetCard(card) {
+      card.querySelector('.play-btn').innerHTML   = PLAY_ICON;
+      card.querySelector('.progress-fill').style.width = '0%';
+      card.querySelector('.progress-thumb').style.left  = '0%';
+      card.querySelector('.cur').textContent      = '0:00';
+      card.classList.remove('playing');
+    }
+
+    document.querySelectorAll('.song-card').forEach(card => {
+      const audio       = card.querySelector('audio');
+      const btn         = card.querySelector('.play-btn');
+      const fill        = card.querySelector('.progress-fill');
+      const thumb       = card.querySelector('.progress-thumb');
+      const curEl       = card.querySelector('.cur');
+      const totEl       = card.querySelector('.tot');
+      const durEl       = card.querySelector('.track-dur');
+      const progressWrap = card.querySelector('.progress-wrap');
+
+      audio.addEventListener('loadedmetadata', () => {
+        const d = fmt(audio.duration);
+        totEl.textContent = d;
+        durEl.textContent = d;
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+        fill.style.width  = pct + '%';
+        thumb.style.left  = pct + '%';
+        curEl.textContent = fmt(audio.currentTime);
+      });
+
+      audio.addEventListener('ended', () => {
+        resetCard(card);
+        currentAudio = null;
+        currentCard  = null;
+      });
+
+      btn.addEventListener('click', () => {
+        const isThisCard = currentAudio === audio;
+
+        // stop whatever is playing
+        if (currentAudio && !isThisCard) {
+          currentAudio.pause();
+          resetCard(currentCard);
+        }
+
+        if (audio.paused) {
+          audio.play().catch(() => {});
+          btn.innerHTML = PAUSE_ICON;
+          card.classList.add('playing');
+          currentAudio = audio;
+          currentCard  = card;
+        } else {
+          audio.pause();
+          btn.innerHTML = PLAY_ICON;
+          card.classList.remove('playing');
+          currentAudio = null;
+          currentCard  = null;
+        }
+      });
+
+      progressWrap.addEventListener('click', e => {
+        const rect = progressWrap.getBoundingClientRect();
+        const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        if (audio.duration) audio.currentTime = pct * audio.duration;
+      });
+    });
+  </script>
+</body>
+</html>
