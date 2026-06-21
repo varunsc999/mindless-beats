@@ -12,9 +12,9 @@
       --bg: #0a0a0a;
       --card: #141414;
       --card-border: #242424;
-      --purple: #c084fc;
-      --purple-hover: #d8a5ff;
-      --cyan: #38bdf8;
+      --purple: #c9a84c;
+      --purple-hover: #d9bc78;
+      --cyan: #a8a8b3;
       --text-primary: #f0f0f0;
       --text-muted: #555;
       --text-dim: #2e2e2e;
@@ -54,16 +54,43 @@
       100% { transform: translateY(-10vh) rotate(20deg); opacity: 0; }
     }
 
-    /* ── Header ── */
-    header {
-      padding: 4rem 2rem 0;
-      max-width: 1400px;
-      margin: 0 auto;
-      position: relative;
+    /* ── Collage container (used in header + footer) ── */
+    .collage {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .collage img {
+      position: absolute;
+      object-fit: cover;
+      border-radius: 6px;
+      filter: grayscale(100%) opacity(0.13);
+      transition: none;
+    }
+    /* fade edges so collage blends into bg */
+    .collage::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom,  var(--bg) 0%, transparent 25%, transparent 75%, var(--bg) 100%),
+        linear-gradient(to right,   var(--bg) 0%, transparent 15%, transparent 85%, var(--bg) 100%);
       z-index: 1;
     }
 
+    /* ── Header ── */
+    header {
+      position: relative;
+      padding: 4rem 2rem 0;
+      z-index: 1;
+    }
     .header-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 1400px;
+      margin: 0 auto;
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
@@ -71,7 +98,6 @@
       padding-bottom: 2rem;
       border-bottom: 1px solid #1e1e1e;
     }
-
     .site-title {
       font-size: clamp(2.4rem, 5vw, 3.8rem);
       font-weight: 700;
@@ -80,11 +106,7 @@
       color: var(--text-primary);
     }
     .site-title .beats { color: var(--purple); }
-
-    .header-meta {
-      text-align: right;
-      flex-shrink: 0;
-    }
+    .header-meta { text-align: right; flex-shrink: 0; }
     .track-count {
       font-size: 11px;
       color: var(--text-muted);
@@ -106,7 +128,6 @@
       width: max-content;
       animation: ticker 28s linear infinite;
     }
-    /* Duplicate content for seamless loop */
     .ticker-content {
       display: flex;
       align-items: center;
@@ -141,7 +162,6 @@
     .ticker-wave span:nth-child(5) { height: 9px;  animation-delay: 0.8s; }
     .ticker-wave span:nth-child(6) { height: 12px; animation-delay: 1.0s; }
     .ticker-wave span:nth-child(7) { height: 5px;  animation-delay: 1.2s; }
-
     @keyframes wavepulse {
       0%, 100% { transform: scaleY(1); opacity: 0.3; }
       50%       { transform: scaleY(1.7); opacity: 0.65; }
@@ -202,68 +222,31 @@
       overflow: hidden;
       transition: border-color 0.2s, transform 0.2s;
     }
-    .song-card:hover {
-      border-color: #333;
-      transform: translateY(-2px);
-    }
-    .song-card.playing {
-      border-color: #c084fc55;
-    }
+    .song-card:hover { border-color: #333; transform: translateY(-2px); }
+    .song-card.playing { border-color: #c9a84c44; }
     .song-card.playing::before {
       content: '';
       position: absolute;
       inset: 0;
       border-radius: 20px;
-      background: radial-gradient(ellipse at 50% 110%, #c084fc0d 0%, transparent 65%);
+      background: radial-gradient(ellipse at 50% 110%, #c9a84c0d 0%, transparent 65%);
       pointer-events: none;
     }
-
-    /* faint card note deco */
     .card-deco-note {
       position: absolute;
       top: 8px; right: 12px;
       font-size: 42px;
-      color: var(--purple);
+      color: #c9a84c;
       opacity: 0.04;
       pointer-events: none;
       line-height: 1;
     }
-
-    .top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .track-num {
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .track-dur {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
-    .song-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-    }
-    .song-sub {
-      font-size: 12px;
-      font-weight: 400;
-      color: var(--text-muted);
-      margin-top: 3px;
-    }
-    .controls-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 2px;
-    }
+    .top-row { display: flex; align-items: center; justify-content: space-between; }
+    .track-num { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .track-dur { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .song-title { font-size: 16px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; line-height: 1.2; }
+    .song-sub { font-size: 12px; font-weight: 400; color: var(--text-muted); margin-top: 3px; }
+    .controls-row { display: flex; align-items: center; gap: 12px; margin-top: 2px; }
     .play-btn {
       width: 40px; height: 40px;
       flex-shrink: 0;
@@ -278,13 +261,7 @@
     .play-btn:hover { background: var(--purple-hover); }
     .play-btn:active { transform: scale(0.94); }
     .song-card.playing .play-btn { background: var(--cyan); }
-
-    .progress-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .progress-col { flex: 1; display: flex; flex-direction: column; gap: 5px; }
     .progress-wrap {
       position: relative;
       height: 18px;
@@ -317,7 +294,7 @@
       width: 13px; height: 13px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 0 0 7px #c084fc99;
+      box-shadow: 0 0 7px #c9a84c88;
       left: 0%;
       pointer-events: none;
       opacity: 0;
@@ -326,31 +303,26 @@
     .progress-wrap:hover .progress-thumb,
     .progress-wrap.dragging .progress-thumb { opacity: 1; }
     .progress-wrap.dragging .progress-thumb { transform: translate(-50%, -50%) scale(1.25); }
-    .time-row {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .time-display {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.03em;
-    }
+    .time-row { display: flex; align-items: center; gap: 5px; }
+    .time-display { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; letter-spacing: 0.03em; }
     .time-sep { font-size: 11px; color: var(--text-dim); }
-
     audio { display: none; }
 
     /* ── Footer ── */
     footer {
+      position: relative;
       text-align: center;
-      padding: 2rem;
+      padding: 3rem 2rem;
       font-size: 12px;
-      color: var(--text-dim);
+      color: var(--text-muted);
       border-top: 1px solid #181818;
       letter-spacing: 0.08em;
+      overflow: hidden;
+      min-height: 100px;
+    }
+    .footer-text {
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     /* ── Responsive ── */
@@ -385,6 +357,9 @@
   </div>
 
   <header>
+    <!-- Header collage: first 12 images -->
+    <div class="collage" aria-hidden="true" id="header-collage"></div>
+
     <div class="header-inner">
       <h1 class="site-title">mindless_<span class="beats">beats</span></h1>
       <div class="header-meta">
@@ -396,7 +371,6 @@
   <!-- Seamless scrolling ticker -->
   <div class="ticker-wrap" aria-hidden="true">
     <div class="ticker-track">
-      <!-- First copy -->
       <div class="ticker-content">
         <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
         <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
@@ -407,7 +381,6 @@
         <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
         <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
       </div>
-      <!-- Exact duplicate for seamless loop -->
       <div class="ticker-content">
         <span class="ticker-notes">♩ ♪ ♫ ♬ ♩ ♪ ♫ ♬</span>
         <span class="ticker-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
@@ -428,7 +401,7 @@
   <main class="grid-wrap">
     <div class="grid" id="grid">
 
-      <!-- ─ CARD 1 ─ Change title, genre, and audio src ─ -->
+      <!-- ─ CARD 1 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♪</span>
         <audio src="audio/aura-final.mp3"></audio>
@@ -741,9 +714,76 @@
     </div>
   </main>
 
-  <footer>♩ &nbsp; mindless_beats &nbsp; ♩</footer>
+  <footer>
+    <!-- Footer collage: last 12 images -->
+    <div class="collage" aria-hidden="true" id="footer-collage"></div>
+    <span class="footer-text">♩ &nbsp; mindless_beats &nbsp; ♩</span>
+  </footer>
 
   <script>
+    /* ── Collage builder ── */
+    const ALL_IMAGES = [
+      'americandream','astroworld','drake','dripharder','ds4ever',
+      'forallthedogs','future','gunna','iam_iwas','iceman',
+      'ineverlikedyou','itsonlyme','lilbaby','myturn','rodeo',
+      'somuchfun','takecare','thewizrd','travis','utopia',
+      'wunna','heroesandvillains','wedonttrustyou','westilldonttrustyou'
+    ];
+
+    // layout configs: each entry = [left%, top%, width(px), rotation(deg), opacity]
+    const HEADER_LAYOUT = [
+      [2,  10, 130, -14,  0.11],
+      [10, 40, 100,   8,  0.09],
+      [18,  5, 115, -6,   0.12],
+      [25, 50,  90,  12,  0.08],
+      [33, 15, 140, -10,  0.10],
+      [42, 55, 105,   5,  0.09],
+      [50,  8, 120, -18,  0.11],
+      [58, 45,  95,  15,  0.08],
+      [65, 20, 135,  -4,  0.12],
+      [73, 60, 100,  10,  0.09],
+      [80,  5, 110, -12,  0.10],
+      [88, 35, 125,   7,  0.11],
+    ];
+
+    const FOOTER_LAYOUT = [
+      [1,  15, 110,  11,  0.10],
+      [9,  55,  95, -8,   0.09],
+      [17, 10, 130, -15,  0.11],
+      [26, 60, 100,   6,  0.08],
+      [34, 20, 115,  13,  0.10],
+      [43, 50, 125,  -5,  0.12],
+      [51,  5, 100, -11,  0.09],
+      [60, 45, 135,   9,  0.11],
+      [68, 25, 105, -14,  0.10],
+      [76, 65,  90,   4,  0.08],
+      [83, 10, 120,  16,  0.11],
+      [91, 40, 110,  -7,  0.09],
+    ];
+
+    function buildCollage(containerId, layout, imageSlice) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      layout.forEach(([left, top, width, rot, opacity], i) => {
+        const img = document.createElement('img');
+        img.src = 'images/' + imageSlice[i] + '.jpg';
+        img.style.cssText = `
+          left: ${left}%;
+          top: ${top}%;
+          width: ${width}px;
+          height: ${Math.round(width * 0.75)}px;
+          transform: rotate(${rot}deg);
+          filter: grayscale(100%) opacity(${opacity});
+        `;
+        container.appendChild(img);
+      });
+    }
+
+    // Header uses first 12, footer uses last 12
+    buildCollage('header-collage', HEADER_LAYOUT, ALL_IMAGES.slice(0, 12));
+    buildCollage('footer-collage', FOOTER_LAYOUT, ALL_IMAGES.slice(12, 24));
+
+    /* ── Audio player ── */
     const PLAY_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>`;
     const PAUSE_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2h3v10H3V2zm5 0h3v10H8V2z"/></svg>`;
 
@@ -758,21 +798,21 @@
     }
 
     function resetCard(card) {
-      card.querySelector('.play-btn').innerHTML   = PLAY_ICON;
+      card.querySelector('.play-btn').innerHTML        = PLAY_ICON;
       card.querySelector('.progress-fill').style.width = '0%';
-      card.querySelector('.progress-thumb').style.left  = '0%';
-      card.querySelector('.cur').textContent      = '0:00';
+      card.querySelector('.progress-thumb').style.left = '0%';
+      card.querySelector('.cur').textContent           = '0:00';
       card.classList.remove('playing');
     }
 
     document.querySelectorAll('.song-card').forEach(card => {
-      const audio       = card.querySelector('audio');
-      const btn         = card.querySelector('.play-btn');
-      const fill        = card.querySelector('.progress-fill');
-      const thumb       = card.querySelector('.progress-thumb');
-      const curEl       = card.querySelector('.cur');
-      const totEl       = card.querySelector('.tot');
-      const durEl       = card.querySelector('.track-dur');
+      const audio        = card.querySelector('audio');
+      const btn          = card.querySelector('.play-btn');
+      const fill         = card.querySelector('.progress-fill');
+      const thumb        = card.querySelector('.progress-thumb');
+      const curEl        = card.querySelector('.cur');
+      const totEl        = card.querySelector('.tot');
+      const durEl        = card.querySelector('.track-dur');
       const progressWrap = card.querySelector('.progress-wrap');
 
       audio.addEventListener('loadedmetadata', () => {
@@ -796,13 +836,10 @@
 
       btn.addEventListener('click', () => {
         const isThisCard = currentAudio === audio;
-
-        // stop whatever is playing
         if (currentAudio && !isThisCard) {
           currentAudio.pause();
           resetCard(currentCard);
         }
-
         if (audio.paused) {
           audio.play().catch(() => {});
           btn.innerHTML = PAUSE_ICON;
@@ -822,7 +859,6 @@
         const rect = progressWrap.getBoundingClientRect();
         return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
       }
-
       function applyPct(pct) {
         fill.style.width  = (pct * 100) + '%';
         thumb.style.left  = (pct * 100) + '%';
@@ -830,36 +866,32 @@
         if (audio.duration) audio.currentTime = pct * audio.duration;
       }
 
-      // ── Mouse drag ──
       progressWrap.addEventListener('mousedown', e => {
         e.preventDefault();
         progressWrap.classList.add('dragging');
         applyPct(getPct(e.clientX));
-
         function onMove(e) { applyPct(getPct(e.clientX)); }
-        function onUp()    {
+        function onUp() {
           progressWrap.classList.remove('dragging');
           document.removeEventListener('mousemove', onMove);
-          document.removeEventListener('mouseup',   onUp);
+          document.removeEventListener('mouseup', onUp);
         }
         document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup',   onUp);
+        document.addEventListener('mouseup', onUp);
       });
 
-      // ── Touch drag ──
       progressWrap.addEventListener('touchstart', e => {
         e.preventDefault();
         progressWrap.classList.add('dragging');
         applyPct(getPct(e.touches[0].clientX));
-
         function onMove(e) { applyPct(getPct(e.touches[0].clientX)); }
-        function onEnd()   {
+        function onEnd() {
           progressWrap.classList.remove('dragging');
           progressWrap.removeEventListener('touchmove', onMove);
-          progressWrap.removeEventListener('touchend',  onEnd);
+          progressWrap.removeEventListener('touchend', onEnd);
         }
         progressWrap.addEventListener('touchmove', onMove, { passive: false });
-        progressWrap.addEventListener('touchend',  onEnd);
+        progressWrap.addEventListener('touchend', onEnd);
       }, { passive: false });
     });
   </script>
