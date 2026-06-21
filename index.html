@@ -723,11 +723,11 @@
   <script>
     /* ── Collage builder ── */
     const ALL_IMAGES = [
-      'americandream','astroworld','drake','dripharder','ds4ever',
-      'forallthedogs','future','gunna','iam_iwas','iceman',
-      'ineverlikedyou','itsonlyme','lilbaby','myturn','rodeo',
-      'somuchfun','takecare','thewizrd','travis','utopia',
-      'wunna','heroesandvillains','wedonttrustyou','westilldonttrustyou'
+      'americandream.jpg','astroworld.jpg','drake.jpg','dripharder.jpg','ds4ever.jpg',
+      'forallthedogs.jpg','future.jpg','gunna.jpg','iam_iwas.jpg','iceman.jpg',
+      'ineverlikedyou.jpg','itsonlyme.jpg','lilbaby.jpg','myturn.jpg','rodeo.jpg',
+      'somuchfun.jpg','takecare.jpg','thewizrd.jpg','travis.jpg','utopia.jpg',
+      'wunna.jpg','heroesandvillains.jpg','wedonttrustyou.jpg','westilldonttrustyou.jpg'
     ];
 
     // layout configs: each entry = [left%, top%, width(px), rotation(deg), opacity]
@@ -766,7 +766,7 @@
       if (!container) return;
       layout.forEach(([left, top, width, rot, opacity], i) => {
         const img = document.createElement('img');
-        img.src = 'images/' + imageSlice[i] + '.jpg';
+        img.src = 'images/' + imageSlice[i];
         img.style.cssText = `
           left: ${left}%;
           top: ${top}%;
