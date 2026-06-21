@@ -76,8 +76,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(to bottom,  var(--bg) 0%, transparent 25%, transparent 75%, var(--bg) 100%),
-        linear-gradient(to right,   var(--bg) 0%, transparent 15%, transparent 85%, var(--bg) 100%);
+        linear-gradient(to bottom,  var(--bg) 0%, transparent 30%, transparent 70%, var(--bg) 100%),
+        linear-gradient(to right,   var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%);
       z-index: 1;
     }
 
@@ -107,7 +107,15 @@
       color: var(--text-primary);
     }
     .site-title .beats { color: var(--purple); }
-    .header-meta { text-align: right; flex-shrink: 0; }
+    .byline {
+      font-size: 13px;
+      font-weight: 400;
+      color: #f0f0f0;
+      opacity: 0.45;
+      letter-spacing: 0.01em;
+      margin-top: 10px;
+    }
+    .byline .name { color: #c9a84c; }
     .track-count {
       font-size: 11px;
       color: var(--text-muted);
@@ -324,6 +332,16 @@
     .footer-text {
       position: relative;
       z-index: 2;
+      color: #c9a84c;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+    }
+    .footer-email {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #a8a8b3;
+      letter-spacing: 0.05em;
     }
 
     /* ── Responsive ── */
@@ -363,6 +381,13 @@
 
     <div class="header-inner">
       <h1 class="site-title">mindless_<span class="beats">beats</span></h1>
+
+      <!-- ── BYLINE TOGGLE ────────────────────────────────────────────
+           To SHOW your name: change  display:none  to  display:block
+           To HIDE your name: change  display:block  to  display:none
+           Currently: OFF (hidden)
+      ──────────────────────────────────────────────────────────────── -->
+      <p class="byline" style="display:none">By: <span class="name">Varun Chirravuri</span></p>
       <div class="header-meta">
         <p class="track-count">10 tracks</p>
       </div>
@@ -718,7 +743,10 @@
   <footer>
     <!-- Footer collage: last 12 images -->
     <div class="collage" aria-hidden="true" id="footer-collage"></div>
-    <span class="footer-text">♩ &nbsp; mindless_beats &nbsp; ♩</span>
+    <span class="footer-text">
+      ♩ &nbsp; mindless_beats &nbsp; ♩
+      <span class="footer-email">mindlessbeats101@gmail.com</span>
+    </span>
   </footer>
 
   <script>
