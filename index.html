@@ -287,13 +287,24 @@
     }
     .progress-wrap {
       position: relative;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      touch-action: none;
+    }
+    .progress-track-bg {
+      position: absolute;
+      left: 0; right: 0;
       height: 3px;
       background: var(--progress-track);
       border-radius: 99px;
-      cursor: pointer;
+      pointer-events: none;
     }
     .progress-fill {
-      height: 100%;
+      position: absolute;
+      left: 0;
+      height: 3px;
       border-radius: 99px;
       background: linear-gradient(90deg, var(--purple), var(--cyan));
       width: 0%;
@@ -303,15 +314,18 @@
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 11px; height: 11px;
+      width: 13px; height: 13px;
       border-radius: 50%;
       background: #fff;
+      box-shadow: 0 0 7px #c084fc99;
       left: 0%;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.15s;
+      transition: opacity 0.15s, transform 0.1s;
     }
-    .progress-wrap:hover .progress-thumb { opacity: 1; }
+    .progress-wrap:hover .progress-thumb,
+    .progress-wrap.dragging .progress-thumb { opacity: 1; }
+    .progress-wrap.dragging .progress-thumb { transform: translate(-50%, -50%) scale(1.25); }
     .time-row {
       display: flex;
       align-items: center;
@@ -417,14 +431,14 @@
       <!-- ─ CARD 1 ─ Change title, genre, and audio src ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♪</span>
-        <audio src="audio/sax-final.mp3"></audio>
+        <audio src="audio/aura-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 01</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">sax</p>
-          <p class="song-sub">sample</p>
+          <p class="song-title">Aura</p>
+          <p class="song-sub">Trap / Edit</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 01">
@@ -432,6 +446,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -447,14 +462,14 @@
       <!-- ─ CARD 2 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♫</span>
-        <audio src="audio/song2.mp3"></audio>
+        <audio src="audio/brass-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 02</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Brass</p>
+          <p class="song-sub">Trap / Ken Carson</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 02">
@@ -462,6 +477,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -477,14 +493,14 @@
       <!-- ─ CARD 3 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♬</span>
-        <audio src="audio/song3.mp3"></audio>
+        <audio src="audio/final-halo.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 03</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Halo</p>
+          <p class="song-sub">Trap</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 03">
@@ -492,6 +508,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -507,14 +524,14 @@
       <!-- ─ CARD 4 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♩</span>
-        <audio src="audio/song4.mp3"></audio>
+        <audio src="audio/gutar-is-crazy-final-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 04</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Solo</p>
+          <p class="song-sub">Trap</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 04">
@@ -522,6 +539,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -537,14 +555,14 @@
       <!-- ─ CARD 5 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♪</span>
-        <audio src="audio/song5.mp3"></audio>
+        <audio src="audio/heavenly-piano-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 05</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Heavenly Piano</p>
+          <p class="song-sub">Trap</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 05">
@@ -552,6 +570,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -567,14 +586,14 @@
       <!-- ─ CARD 6 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♫</span>
-        <audio src="audio/song6.mp3"></audio>
+        <audio src="audio/pixels-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 06</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Pixels</p>
+          <p class="song-sub">Trap</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 06">
@@ -582,6 +601,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -597,14 +617,14 @@
       <!-- ─ CARD 7 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♬</span>
-        <audio src="audio/song7.mp3"></audio>
+        <audio src="audio/sax-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 07</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Sax</p>
+          <p class="song-sub">Trap / Drake</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 07">
@@ -612,6 +632,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -627,14 +648,14 @@
       <!-- ─ CARD 8 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♩</span>
-        <audio src="audio/song8.mp3"></audio>
+        <audio src="audio/stadium-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 08</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Stadium</p>
+          <p class="song-sub">Trap</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 08">
@@ -642,6 +663,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -657,14 +679,14 @@
       <!-- ─ CARD 9 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♪</span>
-        <audio src="audio/song9.mp3"></audio>
+        <audio src="audio/winning-final.mp3"></audio>
         <div class="top-row">
           <span class="track-num">Track 09</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">Winning</p>
+          <p class="song-sub">Trap</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 09">
@@ -672,6 +694,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -687,14 +710,14 @@
       <!-- ─ CARD 10 ─ -->
       <div class="song-card">
         <span class="card-deco-note" aria-hidden="true">♫</span>
-        <audio src="audio/song10.mp3"></audio>
+        <audio src="audio/xmasfinal.MP3"></audio>
         <div class="top-row">
           <span class="track-num">Track 10</span>
           <span class="track-dur">0:00</span>
         </div>
         <div>
-          <p class="song-title">Song Title Here</p>
-          <p class="song-sub">Genre / Mood</p>
+          <p class="song-title">xmas</p>
+          <p class="song-sub">Trap</p>
         </div>
         <div class="controls-row">
           <button class="play-btn" aria-label="Play Track 10">
@@ -702,6 +725,7 @@
           </button>
           <div class="progress-col">
             <div class="progress-wrap">
+              <div class="progress-track-bg"></div>
               <div class="progress-fill"></div>
               <div class="progress-thumb"></div>
             </div>
@@ -794,11 +818,49 @@
         }
       });
 
-      progressWrap.addEventListener('click', e => {
+      function getPct(clientX) {
         const rect = progressWrap.getBoundingClientRect();
-        const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      }
+
+      function applyPct(pct) {
+        fill.style.width  = (pct * 100) + '%';
+        thumb.style.left  = (pct * 100) + '%';
+        curEl.textContent = fmt(audio.duration * pct);
         if (audio.duration) audio.currentTime = pct * audio.duration;
+      }
+
+      // ── Mouse drag ──
+      progressWrap.addEventListener('mousedown', e => {
+        e.preventDefault();
+        progressWrap.classList.add('dragging');
+        applyPct(getPct(e.clientX));
+
+        function onMove(e) { applyPct(getPct(e.clientX)); }
+        function onUp()    {
+          progressWrap.classList.remove('dragging');
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup',   onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup',   onUp);
       });
+
+      // ── Touch drag ──
+      progressWrap.addEventListener('touchstart', e => {
+        e.preventDefault();
+        progressWrap.classList.add('dragging');
+        applyPct(getPct(e.touches[0].clientX));
+
+        function onMove(e) { applyPct(getPct(e.touches[0].clientX)); }
+        function onEnd()   {
+          progressWrap.classList.remove('dragging');
+          progressWrap.removeEventListener('touchmove', onMove);
+          progressWrap.removeEventListener('touchend',  onEnd);
+        }
+        progressWrap.addEventListener('touchmove', onMove, { passive: false });
+        progressWrap.addEventListener('touchend',  onEnd);
+      }, { passive: false });
     });
   </script>
 </body>
