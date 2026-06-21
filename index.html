@@ -108,14 +108,14 @@
     }
     .site-title .beats { color: var(--purple); }
     .byline {
-      font-size: 13px;
-      font-weight: 400;
+      font-size: 14px;
+      font-weight: 500;
       color: #f0f0f0;
-      opacity: 0.45;
-      letter-spacing: 0.01em;
+      opacity: 0.75;
+      letter-spacing: 0.02em;
       margin-top: 10px;
     }
-    .byline .name { color: #c9a84c; }
+    .byline .name { color: #c9a84c; opacity: 1; }
     .track-count {
       font-size: 11px;
       color: var(--text-muted);
@@ -380,14 +380,16 @@
     <div class="collage" aria-hidden="true" id="header-collage"></div>
 
     <div class="header-inner">
-      <h1 class="site-title">mindless_<span class="beats">beats</span></h1>
+      <div>
+        <h1 class="site-title">mindless_<span class="beats">beats</span></h1>
 
-      <!-- ── BYLINE TOGGLE ────────────────────────────────────────────
-           To SHOW your name: change  display:none  to  display:block
-           To HIDE your name: change  display:block  to  display:none
-           Currently: OFF (hidden)
-      ──────────────────────────────────────────────────────────────── -->
-      <p class="byline" style="display:none">By: <span class="name">Varun Chirravuri</span></p>
+        <!-- ── BYLINE TOGGLE ────────────────────────────────────────────
+             To SHOW your name: change  display:none  to  display:block
+             To HIDE your name: change  display:block  to  display:none
+             Currently: ON (visible)
+        ──────────────────────────────────────────────────────────────── -->
+        <p class="byline" style="display:block">By: <span class="name">Varun Chirravuri</span></p>
+      </div>
       <div class="header-meta">
         <p class="track-count">10 tracks</p>
       </div>
@@ -814,7 +816,10 @@
     buildCollage('header-collage', HEADER_LAYOUT, ALL_IMAGES.slice(0, 12));
     buildCollage('footer-collage', FOOTER_LAYOUT, ALL_IMAGES.slice(12, 24));
 
-    /* ── Audio player ── */
+    const trackCount = document.querySelectorAll('.song-card').length;
+    document.querySelector('.track-count').textContent = trackCount + ' tracks';
+
+    
     const PLAY_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l9 5-9 5V2z"/></svg>`;
     const PAUSE_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2h3v10H3V2zm5 0h3v10H8V2z"/></svg>`;
 
